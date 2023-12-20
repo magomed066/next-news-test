@@ -24,7 +24,6 @@ const VerifyCodePage = () => {
 
 		return () => {
 			if (!firstRender && !isAuth && !isSuccessSentVerifyCode) {
-				console.log('hello')
 				dispatch(logout())
 			}
 		}
