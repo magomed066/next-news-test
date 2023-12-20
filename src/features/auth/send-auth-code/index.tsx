@@ -29,23 +29,14 @@ export const SendAuthCodeFeature = () => {
 	})
 
 	const dispatch = useAppDispatch()
-	const { error, isSuccessSentVerifyCode, isLoading, user, sentCode } =
+	const { error, isSuccessSentVerifyCode, isLoading, user, token, sentCode } =
 		useAppSelector((state) => state.auth)
 
 	const handleSubmit = form.onSubmit((values) => {
-		dispatch(sendVerificationCode(values.code))
+		dispatch(sendVerificationCode({ code: values.code, token }))
 
 		form.reset()
 	})
-
-	useEffect(() => {
-		return () => {
-			if (!sentCode) {
-				dispatch(logout())
-			}
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [])
 
 	useEffect(() => {
 		if (Boolean(user) && sentCode) {

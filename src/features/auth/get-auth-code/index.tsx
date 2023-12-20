@@ -10,19 +10,10 @@ export const GetAuthCodeFeature = () => {
 	const router = useRouter()
 
 	const dispatch = useAppDispatch()
-	const { isLoading, error, isSuccessVerifyCode, user, gotCode } =
+	const { isLoading, error, isSuccessVerifyCode, user, gotCode, token } =
 		useAppSelector((state) => state.auth)
 
-	const handleClick = async () => dispatch(getVerificationCode())
-
-	useEffect(() => {
-		return () => {
-			if (!isSuccessVerifyCode) {
-				dispatch(logout())
-			}
-		}
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [])
+	const handleClick = () => dispatch(getVerificationCode(token))
 
 	useEffect(() => {
 		if (Boolean(user) && gotCode) {

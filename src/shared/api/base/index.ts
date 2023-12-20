@@ -1,3 +1,4 @@
+import { parseJSON } from '@/shared/lib'
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig } from 'axios'
 
 export class ApiBase {
@@ -9,24 +10,6 @@ export class ApiBase {
 			headers: {
 				'Content-Type': 'application/json',
 			},
-		})
-
-		// Adding token to each request
-		this.client.interceptors.request.use((req) => {
-			const isRegister = req.url?.includes('register')
-			const isLogin = req.url?.includes('auth')
-
-			if (isLogin || isRegister) return req
-
-			const token = JSON.parse(
-				JSON.stringify(localStorage.getItem('accessToken')),
-			)
-
-			if (token) {
-				req.headers.authorization = `Bearer ${token}`
-			}
-
-			return req
 		})
 
 		this.client.interceptors.response.use(

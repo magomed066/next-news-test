@@ -1,4 +1,4 @@
-import { AxiosError, AxiosResponse } from 'axios'
+import { AxiosError } from 'axios'
 import { apiService } from '../../base'
 import { AuthRequestResponse } from './types'
 import { ErrorResponse } from '@/shared/lib'
@@ -52,9 +52,13 @@ class AuthService {
 		}
 	}
 
-	async getVerificationCode() {
+	async getVerificationCode(token: string) {
 		try {
-			await apiService.get('https://api.65info.ru/api/user/confirm')
+			await fetch('https://api.65info.ru/api/user/confirm', {
+				headers: {
+					authorization: `Bearer ${token}`,
+				},
+			})
 		} catch (error) {
 			if (error instanceof AxiosError) {
 				throw (
@@ -68,9 +72,17 @@ class AuthService {
 		}
 	}
 
-	async sendVerificationCode(code: string) {
+	async sendVerificationCode(code: string, token: string) {
 		try {
-			await apiService.post('https://api.65info.ru/api/user/confirm', { code })
+			await apiService.post(
+				'https://api.65info.ru/api/user/confirm',
+				{ code },
+				{
+					headers: {
+						authorization: `Bearer ${token}`,
+					},
+				},
+			)
 		} catch (error) {
 			if (error instanceof AxiosError) {
 				throw (

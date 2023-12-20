@@ -8,12 +8,18 @@ const user =
 		? parseJSON<User>(localStorage.getItem('user') || '')
 		: null
 
+const token =
+	typeof window !== 'undefined'
+		? parseJSON<User>(localStorage.getItem('accessToken') || '')
+		: ''
+
 const initialState: AuthState = {
 	user: user as User | null,
 	isLoading: false,
 	gotCode: false,
 	sentCode: false,
 	isSuccess: false,
+	token: (token as string) || '',
 	isSuccessVerifyCode: false,
 	isSuccessSentVerifyCode: false,
 	error: null,
@@ -48,9 +54,9 @@ export const login = createAsyncThunk(
 
 export const getVerificationCode = createAsyncThunk(
 	'/auth/verification',
-	async (_, thunkApi) => {
+	async (token: string, thunkApi) => {
 		try {
-			await authService.getVerificationCode()
+			await authService.getVerificationCode(token)
 		} catch (error) {
 			throw thunkApi.rejectWithValue(error as ErrorResponse)
 		}
@@ -59,9 +65,9 @@ export const getVerificationCode = createAsyncThunk(
 
 export const sendVerificationCode = createAsyncThunk(
 	'/auth/verification/send',
-	async (code: string, thunkApi) => {
+	async (data: { code: string; token: string }, thunkApi) => {
 		try {
-			await authService.sendVerificationCode(code)
+			await authService.sendVerificationCode(data.code, data.token)
 		} catch (error) {
 			throw thunkApi.rejectWithValue(error)
 		}
@@ -92,6 +98,7 @@ export const authSlice = createSlice({
 			.addCase(register.pending, (state) => {
 				state.isLoading = true
 				state.isSuccess = false
+				state.error = null
 			})
 			.addCase(register.fulfilled, (state, action) => {
 				state.isLoading = false
@@ -110,11 +117,12 @@ export const authSlice = createSlice({
 			.addCase(login.pending, (state) => {
 				state.isLoading = true
 				state.isSuccess = false
+				state.error = null
 			})
 			.addCase(login.fulfilled, (state, action) => {
 				state.isLoading = false
 				state.isSuccess = true
-
+				state.token = action.payload.session.token
 				state.user = action.payload.user
 			})
 			.addCase(login.rejected, (state, action) => {
@@ -128,7 +136,7 @@ export const authSlice = createSlice({
 			.addCase(getVerificationCode.pending, (state) => {
 				state.isLoading = true
 				state.isSuccessVerifyCode = false
-
+				state.error = null
 				state.gotCode = false
 			})
 			.addCase(getVerificationCode.fulfilled, (state) => {
@@ -146,14 +154,12 @@ export const authSlice = createSlice({
 			// Send varification code
 			.addCase(sendVerificationCode.pending, (state) => {
 				state.isLoading = true
-				state.isSuccessSentVerifyCode = false
-
-				state.sentCode = false
+				state.error = null
 			})
 			.addCase(sendVerificationCode.fulfilled, (state) => {
 				state.isLoading = false
 				state.isSuccessSentVerifyCode = true
-				state.sentCode = false
+				state.sentCode = true
 
 				state.isAuth = true
 			})
