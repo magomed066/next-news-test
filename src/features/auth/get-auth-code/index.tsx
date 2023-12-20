@@ -23,8 +23,12 @@ export const GetAuthCodeFeature = () => {
 
 	// Handle Register Err
 	useEffect(() => {
-		if (error?.message) {
+		if (error?.message && Array.isArray(error?.message)) {
 			toast.error(error?.message?.join(','))
+		}
+
+		if (error?.message && !Array.isArray(error?.message)) {
+			toast.error(error?.message)
 		}
 	}, [error])
 
