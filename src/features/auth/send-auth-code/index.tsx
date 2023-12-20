@@ -39,12 +39,17 @@ export const SendAuthCodeFeature = () => {
 	})
 
 	useEffect(() => {
+		return () => {
+			if (!sentCode) {
+				dispatch(logout())
+			}
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [])
+
+	useEffect(() => {
 		if (Boolean(user) && sentCode) {
 			router.push('/')
-		}
-
-		return () => {
-			dispatch(logout())
 		}
 	}, [router, user, sentCode, dispatch])
 

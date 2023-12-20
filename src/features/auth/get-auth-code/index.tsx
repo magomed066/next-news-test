@@ -1,5 +1,5 @@
 'use client'
-import { getVerificationCode } from '@/entities'
+import { getVerificationCode, logout } from '@/entities'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { Button, Card, Flex, Group, Space, Title } from '@mantine/core'
 import { useRouter } from 'next/navigation'
@@ -14,6 +14,15 @@ export const GetAuthCodeFeature = () => {
 		useAppSelector((state) => state.auth)
 
 	const handleClick = async () => dispatch(getVerificationCode())
+
+	useEffect(() => {
+		return () => {
+			if (!isSuccessVerifyCode) {
+				dispatch(logout())
+			}
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [])
 
 	useEffect(() => {
 		if (Boolean(user) && gotCode) {
@@ -39,7 +48,7 @@ export const GetAuthCodeFeature = () => {
 
 			router.push('/verify-code')
 		}
-	}, [isSuccessVerifyCode, router])
+	}, [isSuccessVerifyCode, router, dispatch])
 
 	return (
 		<Flex
